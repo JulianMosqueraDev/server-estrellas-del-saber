@@ -1,11 +1,11 @@
 # Preguntas de producto pendientes
 
-El diagrama da contexto, pero deja decisiones necesarias antes de modelar o implementar flujos. No se asumen respuestas durante la Semana 1.
+El diagrama funcional da contexto, pero las siguientes decisiones requieren validación antes de crear modelos académicos o financieros.
 
 ## Estudiantes y academia
 
 - ¿Qué identificador personal se almacena, quién lo ve y cómo se evita duplicar estudiantes?
-- ¿Un estudiante puede pertenecer a varios acudientes y un acudiente tener varios estudiantes? ¿Qué relaciones se deben representar?
+- ¿Un estudiante puede pertenecer a varios acudientes y un acudiente tener varios estudiantes? ¿Qué relaciones deben representarse?
 - ¿Cómo se definen curso, año/periodo académico, estados y transiciones de matrícula?
 - ¿Alimentación, actividades y horarios son catálogos, asignaciones por estudiante o historial con vigencia?
 - ¿Qué datos contiene un boletín y cuáles son los periodos, escalas y permisos para consultarlo?
@@ -15,16 +15,16 @@ El diagrama da contexto, pero deja decisiones necesarias antes de modelar o impl
 - ¿Cuál es la moneda, precisión y zona horaria que se usarán?
 - ¿Qué representa cada tarifa y qué determina su vigencia, aplicación y ajuste?
 - ¿Cuándo se crea una obligación, cómo se aplican pagos parciales y cómo se corrigen, anulan o devuelven pagos?
-- ¿Qué medios de pago existen y qué evidencia/referencia se conserva?
-- ¿Cómo se calcula “al día”, vencido, saldo, mora y cierre de cartera? ¿Qué fechas y excepciones aplican?
+- ¿Qué medios de pago existen y qué evidencia o referencia se conserva?
+- ¿Cómo se calcula el estado de cuenta, vencido, saldo, mora y cierre de cartera? ¿Qué fechas y excepciones aplican?
 - ¿Un pago puede distribuirse entre varias obligaciones y una obligación recibir varios pagos? ¿Cómo se auditan esos movimientos?
 
-## Eventos, documentos e identidad
+## Eventos, documentos y datos personales
 
 - ¿Quién puede crear eventos, inscribir beneficiarios y enviar notificaciones? ¿Qué canales y consentimientos se requieren?
-- ¿Qué tipos, retención, acceso y firma válida aplican a los certificados y archivos?
-- ¿Quiénes son los actores y roles del sistema, cómo se invitan y cómo recuperan acceso? ¿Se requiere autenticación externa o local?
-- ¿Qué datos personales son imprescindibles, cuánto tiempo se conservan y cómo se atienden correcciones/eliminaciones?
+- ¿Qué tipos, retención, acceso y firma válida aplican a certificados y archivos?
+- ¿Qué datos personales son imprescindibles, cuánto tiempo se conservan y cómo se atienden correcciones o eliminaciones?
+- Invitaciones, recuperación por correo, MFA y login externo siguen fuera del alcance de identidad acordado en [ADR 0003](../adr/0003-identidad-y-sesiones.md).
 
 ## Operación
 

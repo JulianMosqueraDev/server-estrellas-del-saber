@@ -2,12 +2,41 @@ import { resolve } from "node:path";
 import { buildApp } from "./bootstrap/app";
 import { loadConfig } from "./shared/config/env";
 import { createPostgresDatabase } from "./shared/infrastructure/persistence/postgresql/database";
+import { BunIdentitySecurity } from "./modules/identity/infrastructure/crypto/bun-identity-security";
+import { PostgresIdentityRepository } from "./modules/identity/infrastructure/persistence/postgresql/postgres-identity-repository";
+import { createIdentityApplication } from "./modules/identity/application/identity-application";
 
 async function start(): Promise<void> {
   const config = loadConfig();
   const database = createPostgresDatabase(config);
+  const identityRepository = new PostgresIdentityRepository(database.connection);
+  const identitySecurity = new BunIdentitySecurity(
+    config.authJwtSecret,
+    config.authJwtIssuer,
+    config.authJwtAudience,
+    config.authAccessTokenTtlSeconds,
+    config.authJwtPreviousSecret,
+  );
+  const identityApplication = createIdentityApplication({
+    repository: identityRepository,
+    security: identitySecurity,
+    accessTokenTtlSeconds: config.authAccessTokenTtlSeconds,
+    refreshTokenTtlSeconds: config.authRefreshTokenTtlSeconds,
+  });
   const app = await buildApp({
     databaseHealthChecker: database,
+    identity: {
+      application: identityApplication,
+      config: {
+        webOrigin: config.webOrigin,
+        cookieSameSite: config.authCookieSameSite,
+        secureCookie: config.environment === "production",
+        refreshTokenTtlSeconds: config.authRefreshTokenTtlSeconds,
+        loginRateLimitMax: config.authLoginRateLimitMax,
+        refreshRateLimitMax: config.authRefreshRateLimitMax,
+        rateLimitWindowSeconds: config.authRateLimitWindowSeconds,
+      },
+    },
     logger: {
       level: config.logLevel,
       ...(config.environment === "development"

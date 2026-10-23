@@ -4,10 +4,11 @@ import path from "node:path";
 import { Pool } from "pg";
 import type { AppConfig } from "../../../config/env";
 import type { DatabaseHealthChecker } from "../../../application/ports/database-health-checker";
+import type { DatabaseSchema } from "./database-schema";
 
-type Database = Record<string, never>;
+export type Database = DatabaseSchema;
 
-function createKysely(
+export function createKysely(
   config: Pick<AppConfig, "databaseUrl" | "databasePoolMax" | "databaseConnectionTimeoutMs">,
 ): Kysely<Database> {
   return new Kysely<Database>({
@@ -23,6 +24,7 @@ function createKysely(
 }
 
 export interface PostgresDatabase extends DatabaseHealthChecker {
+  readonly connection: Kysely<Database>;
   close(): Promise<void>;
 }
 
@@ -32,6 +34,7 @@ export function createPostgresDatabase(
   const db = createKysely(config);
 
   return {
+    connection: db,
     async check() {
       await sql`select 1`.execute(db);
     },

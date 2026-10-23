@@ -1,31 +1,51 @@
-# name: CI
+name: CI
 
-# on:
-#   pull_request:
-#   push:
-#     branches: [main]
+on:
+  pull_request:
+  push:
+    branches: [main]
 
-# permissions:
-#   contents: read
+permissions:
+  contents: read
 
-# concurrency:
-#   group: ci-${{ github.workflow }}-${{ github.ref }}
-#   cancel-in-progress: true
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
-# jobs:
-#   quality:
-#     name: quality
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 15
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: oven-sh/setup-bun@v2
-#         with:
-#           bun-version-file: .bun-version
-#       - run: bun ci
-#       - run: bun run format:check
-#       - run: bun run lint
-#       - run: bun run typecheck
-#       - run: bun test --check
-#       - run: bun run architecture:check
-#       - run: bun run build
+jobs:
+  quality:
+    name: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:18.6-alpine3.23
+        env:
+          POSTGRES_DB: estrellas_test
+          POSTGRES_USER: estrellas_test
+          POSTGRES_PASSWORD: estrellas_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U estrellas_test -d estrellas_test"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: .
+    env:
+      TEST_DATABASE_URL: postgresql://estrellas_test:estrellas_test@localhost:5432/estrellas_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+      - run: bun ci
+      - run: bun run format:check
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun test
+      - run: bun run test:integration
+      - run: bun run architecture:check
+      - run: bun run build
