@@ -1,5 +1,5 @@
 import { Type, type Static } from "@sinclair/typebox";
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 import type { CheckDatabaseReadiness } from "../../application/use-cases/check-database-readiness";
 
 const HealthResponse = Type.Object({ status: Type.Literal("ok") });
@@ -45,3 +45,13 @@ export function registerHealthRoutes(
     },
   );
 }
+export const pingRoutes: FastifyPluginAsync = async (app) => {
+  app.get("/ping", async (_request, reply) => {
+    reply.header(" Cache-Control", "no-Store ");
+    return {
+      status: "pong",
+      timeStamp: Date.now(),
+      server: "Online",
+    };
+  });
+};

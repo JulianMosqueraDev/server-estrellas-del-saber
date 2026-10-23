@@ -5,7 +5,7 @@ import Fastify, { LogController, type FastifyServerOptions } from "fastify";
 import { CheckDatabaseReadiness } from "../shared/application/use-cases/check-database-readiness";
 import type { DatabaseHealthChecker } from "../shared/application/ports/database-health-checker";
 import { registerErrorHandlers } from "../shared/presentation/http/error-handler";
-import { registerHealthRoutes } from "../shared/presentation/http/health-routes";
+import { pingRoutes, registerHealthRoutes } from "../shared/presentation/http/health-routes";
 
 export interface AppDependencies {
   databaseHealthChecker: DatabaseHealthChecker;
@@ -65,9 +65,10 @@ export async function buildApp(dependencies: AppDependencies) {
       tags: [{ name: "health", description: "Process and dependency health" }],
     },
   });
-
   registerHealthRoutes(app, new CheckDatabaseReadiness(dependencies.databaseHealthChecker));
   await app.register(swaggerUi, { routePrefix: "/docs" });
+
+  await app.register(pingRoutes);
 
   await app.ready();
   return app;
